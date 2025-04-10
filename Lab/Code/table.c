@@ -250,7 +250,18 @@ void definsert(char* name,struct SymbolItem_* item){
 
 
 void insert(struct SymbolTable_* table,char* name,struct SymbolItem_* item){
+
+    unsigned int index=hash_pjw(name);
     
+    struct SymbolItem_* p=def_struct->head[index];
+    while(p!=NULL){
+        if(strcmp(p->field->name,name)==0){
+            printf("Error type 3 at Line %d: Redefined variable \"%s\".\n",item->field->lineno,name);
+            return;
+        }
+        p=p->next;
+    }
+
     item->depth=cur_depth;
     
     if(name[0]!='\0'){
@@ -277,7 +288,7 @@ void insert(struct SymbolTable_* table,char* name,struct SymbolItem_* item){
     
     
 
-    unsigned int index=hash_pjw(name);
+    //unsigned int index=hash_pjw(name);
     //printf("index:%d\n",index);
     
     item->next=table->head[index];
