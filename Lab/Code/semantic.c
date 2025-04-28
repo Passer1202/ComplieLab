@@ -13,6 +13,15 @@ typedef struct node
 */
 
 //完善插入检查...
+
+/*
+{
+    int lineno; // line number of the field
+    char name[MAX_NAME_LEN]; // name of the field
+    Type type; // type of the field
+    FieldList tail; // next field in the list
+};
+*/
 void walkTree(struct node* root){
     
     if(root==NULL) return;
@@ -57,6 +66,7 @@ void ExtDef(struct node* root){
                 item->field->lineno = p->lineno;
                 item->flag = 0;
                 insert(table, item->field->name, item);
+                insertVar(Var, item->field);//lab3添加的
                 p=p->tail;
             }
         }
@@ -92,6 +102,7 @@ void ExtDef(struct node* root){
                     item1->flag = 0;
                     item1->field->lineno = p->lineno;
                     insert(table,item1->field->name, item1);
+                    insertVar(Var, item1->field);//lab3添加的
                     p=p->tail;
                 }
                 CompSt(root->child[2]);//进行检查和符号表维护.
@@ -762,7 +773,9 @@ void Stmt(struct node* root){
     if(root->child_num==1){
         //Stmt : CompSt
         assert(strcmp(root->child[0]->name,"CompSt")==0);
+        addDepth();
         CompSt(root->child[0]);
+        minusDepth();
     }
     else if(root->child_num==2){
         //Stmt : Exp SEMI
@@ -1138,12 +1151,14 @@ FieldList Dec(struct node* root,Type type){
     if(inStruct!=0){
         //在结构体中定义的变量
         sfinsert(table, item->field->name, item);
+        //在lab3中我们再插入
     }
     else{
         insert(table, item->field->name, item);
+        //insertVar(Var, item->field);//lab3添加的
     }
-    
-
+    //printf("insert %s-\n",item->field->name);
+    insertVar(Var, item->field);//lab3添加的
 
     return ret;
 }

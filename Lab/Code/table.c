@@ -264,7 +264,7 @@ void insert(struct SymbolTable_* table,char* name,struct SymbolItem_* item){
 
     item->depth=cur_depth;
     
-    if(name[0]!='\0'){
+    if(name[0]!='\0'||table!=Var){//Var是Lab3添加的...不需要检查...
         int check=insertcheck(table,name);//0:不存在，1:存在
         if(check==1){
                 //error: variable or structure or function redefined
@@ -295,8 +295,11 @@ void insert(struct SymbolTable_* table,char* name,struct SymbolItem_* item){
     
     table->head[index]=item;
     
-    item->snext=stack->head;
-    stack->head=item;
+    if(table!=Var){
+        item->snext=stack->head;
+        stack->head=item;
+    }
+    
     //printf("%x\n",stack->head);
     //printf("table->head[index]\n",item);
     if(DEBUG){
@@ -438,4 +441,56 @@ void check_defed(){
             p=p->next;
         }
     }
+}
+
+void pre_read_write(){
+    struct SymbolItem_* item = (struct SymbolItem_*)malloc(sizeof(struct SymbolItem_));
+    item->kind = FUNCTION;
+    item->field = (FieldList)malloc(sizeof(struct FieldList_));
+    item->field->tail = NULL;
+    strcpy(item->field->name,"read");
+    item->field->type = (Type)malloc(sizeof(struct Type_));
+    item->field->type->kind = FUNCTION;
+    item->field->type->u.function.returnType = (Type)malloc(sizeof(struct Type_));
+    item->field->type->u.function.returnType->kind = BASIC;
+    item->field->type->u.function.returnType->u.basic = 0;//int型
+    item->field->type->u.function.argc = 0;
+    item->field->type->u.function.argv = NULL;
+    item->flag = 1;
+    item->field->lineno = -1;//预先定义的函数，行号不重要
+    definsert(item->field->name, item);
+
+    item = (struct SymbolItem_*)malloc(sizeof(struct SymbolItem_));
+    item->kind = FUNCTION;
+    item->field = (FieldList)malloc(sizeof(struct FieldList_));
+    item->field->tail = NULL;
+    strcpy(item->field->name,"write");
+    item->field->type = (Type)malloc(sizeof(struct Type_));
+    item->field->type->kind = FUNCTION;
+    item->field->type->u.function.returnType = (Type)malloc(sizeof(struct Type_));
+    item->field->type->u.function.returnType->kind = BASIC;
+    item->field->type->u.function.returnType->u.basic = 0;//int型
+    item->field->type->u.function.argc = 1;
+    item->field->type->u.function.argv = newField();
+    item->field->type->u.function.argv->type = (Type)malloc(sizeof(struct Type_));
+    item->field->type->u.function.argv->type->kind = BASIC;
+    item->field->type->u.function.argv->type->u.basic = 0;//int型
+    item->field->type->u.function.argv->tail = NULL;
+    item->flag = 1;
+    item->field->lineno = -1;//预先定义的函数，行号不重要
+    definsert(item->field->name, item);
+}
+
+void insertVar(struct SymbolTable_* target_table ,FieldList p){
+    struct SymbolItem_* item = (struct SymbolItem_*)malloc(sizeof(struct SymbolItem_));
+    item->kind = VARIABLE;
+    item->field = (FieldList)malloc(sizeof(struct FieldList_));
+    item->field->tail = NULL;
+    assert(p->name!=NULL);
+    strcpy(item->field->name,p->name);
+    item->field->type = p->type;
+    item->flag = 0;
+    item->field->lineno = p->lineno;
+    insert(target_table,item->field->name, item);
+
 }

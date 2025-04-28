@@ -1,0 +1,19 @@
+struct A{
+    int z;
+    int u;
+};
+
+struct B{
+    int v[9];
+};
+
+int main(){
+    struct A a[10][2];
+    struct B b[3];
+    
+    a[9][1].z=1;
+    b[3].v[2]= a[9][1].z;
+    write(a[9][1].z);
+    write(b[3].v[2]);
+    return 0;
+}

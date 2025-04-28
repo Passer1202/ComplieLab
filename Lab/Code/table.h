@@ -13,7 +13,8 @@ typedef struct Type_ *Type;
 typedef struct FieldList_ *FieldList;
 
 
-typedef struct ARRAY{Type elem; int size;}ARRAYTYPE; // array type
+typedef struct ARRAY{Type elem; int size; int width; }ARRAYTYPE; // array type 
+//width在lab3中使用，我们使用Exp返回当前的类型就能知道对应的width
 
 typedef struct STRUCTURE_
 {
@@ -46,6 +47,7 @@ struct FieldList_
     char name[MAX_NAME_LEN]; // name of the field
     Type type; // type of the field
     FieldList tail; // next field in the list
+    int offset;     // 相对最近结构的偏移量，如a.b.c中c的偏移量是相对b的偏移量
 };
 
 // symbol table entry
@@ -56,7 +58,9 @@ struct SymbolItem_
     struct SymbolItem_* next; //next symbol in the same bucket
     struct SymbolItem_* snext; //next symbol in the same stack
     FieldList field; // field list of the symbol
-    int flag;       // 0: not defined, 1: defined //函数定义时flag=1，函数声明时flag=0
+    int flag;        // 0: not defined, 1: defined //函数定义时flag=1，函数声明时flag=0
+    int isAddr;
+    
 };
 
 struct SymbolTable_
@@ -117,11 +121,14 @@ struct SymbolItem_* isDefined(struct SymbolTable_* table, char* name);
 //计算哈希表索引
 unsigned int hash_pjw(char* name);
 
-
 //DEBUG:打印符号表
 void printTable(struct SymbolTable_* table); 
 
 void check_defed();
+
+void pre_read_write(); //预先定义read和write函数
+struct SymbolTable_* Var;//变量符号表  假设4:没有全局变量的使用，并且所有变量均不重名。
+void insertVar();//Lab3写的更优雅的插入函数...
 
 
 

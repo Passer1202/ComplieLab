@@ -1,6 +1,7 @@
 #include "common.h"
 #include "syntax.tab.h"
 #include "semantic.h"
+#include "ir.h"
 
 extern int yylineno;
 extern int yyparse();
@@ -30,12 +31,19 @@ int line_err=0;
 
 int main(int argc,char *argv[])
 {
-    if(argc<=1){
+    if(argc<=2){
         return 1;
     }
     FILE *file=fopen(argv[1],"r");
     if(file==NULL){
         perror(argv[1]);
+        return 1;
+    }
+
+    FILE *output_file=fopen(argv[2],"wt+");
+    if(output_file==NULL){
+        perror(argv[2]);
+        fclose(file);
         return 1;
     }
     
@@ -51,13 +59,18 @@ int main(int argc,char *argv[])
         def_func=newTable();
         dec_func=newTable();
         def_struct=newTable();
+        Var=newTable();
         retType=(Type)malloc(sizeof(struct Type_));
         retType->kind=ERR;
         stack=newStack();
+        pre_read_write();
         walkTree(root);
         check_defed();
+        //生成中间代码...
+        table=Var;
+        makeIR(root,output_file);
         deleteTable(table);
-        deleteTable(def_func);
+        deleteTable(def_func); 
         deleteTable(dec_func);
         deleteTable(def_struct);
     }
