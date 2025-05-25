@@ -1,19 +1,11 @@
-struct A{
-    int z;
-    int u;
-};
-
-struct B{
-    int v[9];
-};
-
-int main(){
-    struct A a[10][2];
-    struct B b[3];
-    
-    a[9][1].z=1;
-    b[3].v[2]= a[9][1].z;
-    write(a[9][1].z);
-    write(b[3].v[2]);
+int main() {
+    int n, m[2];
+    n = read();
+    if(((m[0] = (n > 1)) + (m[1] = (n < 4))) == n) {
+        write(996);
+    }
+    write(m[0]);
+    write(m[1]);
+    write(n);
     return 0;
 }
