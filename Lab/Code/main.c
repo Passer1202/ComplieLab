@@ -1,7 +1,7 @@
 #include "common.h"
 #include "syntax.tab.h"
 #include "semantic.h"
-#include "ir.h"
+#include "oc.h"
 
 extern int yylineno;
 extern int yyparse();
@@ -54,7 +54,6 @@ int main(int argc,char *argv[])
     if(!lex_err&&!syn_err){
         //printf("Syntax analysis success!\n");
         //PrintTree(root,0);
-
         table=newTable();
         def_func=newTable();
         dec_func=newTable();
@@ -69,6 +68,7 @@ int main(int argc,char *argv[])
         //生成中间代码...
         table=Var;
         makeIR(root,output_file);
+        makeOC(output_file);
         deleteTable(table);
         deleteTable(def_func); 
         deleteTable(dec_func);
