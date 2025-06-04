@@ -1,0 +1,9 @@
+FUNCTION main :
+IF #1 < #2 GOTO L1
+v1 := #3
+GOTO L2
+LABEL L1 :
+v1 := #1
+LABEL L2 :
+RETURN v1
+

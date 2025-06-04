@@ -1,0 +1,10 @@
+FUNCTION main :
+v1 := #1
+v2 := #2
+IF v1 < v2 GOTO L1
+v1 := #3
+GOTO L2
+LABEL L1 :
+v1 := v2 - v1
+LABEL L2 :
+RETURN v1
